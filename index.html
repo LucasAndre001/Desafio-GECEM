@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteador de Nomes</title>
+    <link rel="stylesheet" href="Style/style.css">
+    <link rel="icon" href="Assets/favicon-16x16.png">
+</head>
+<body>
+    <header>
+        <img src="Assets/BB-logo.jpeg" alt="logo" id="logo">
+        <h1>Sorteador de Nomes</h1>
+    </header>
+
+    <main>
+        <section class="container-names">
+            <div class="container-header">
+                <h2>Escolha os nomes:</h2>
+            </div>
+
+            <div class="input-wrapper">
+                <input type="text" id="input-name" placeholder="Digite um nome..." maxlength="20">
+                <button id="btn-add"><img src="Assets/adicionar.png" alt="botão de adicionar"></button>
+            </div>
+
+            <ul id="name-list">
+                <li>
+                    <span></span>
+                    <button class="btn-remove"><img src="Assets/lixeira.png" alt="lixeira"></button>
+                </li>
+            </ul>
+        </section>
+
+        <section class="container-wheel">
+            <div class="arrow"><img src="Assets/flecha.png" alt="flecha"></div>
+
+            <canvas id="wheel" width="480" height="480"></canvas>
+
+            <button id="btn-spin">Sortear</button>
+        </section>
+
+        <section class="container-result">
+            <div class="container-header">
+                <h2>Vencedores:</h2>
+            </div>
+
+            <ul id="result-list">
+                <li style="visibility: hidden;">
+                    <span></span>
+                    <span class="crown"><img src="Assets/coroa-ouro.png" alt="coroa de ouro"></span>
+                </li>
+                <li style="visibility: hidden;">
+                    <span></span>
+                    <span class="crown"><img src="Assets/coroa-prata.png" alt="coroa de prata"></span>
+                </li>
+                <li style="visibility: hidden;">
+                    <span></span>
+                    <span class="crown"><img src="Assets/coroa-bronze.png" alt="coroa de bronze"></span>
+                </li>
+            </ul>
+            <ul id="extra-result-list"></ul>
+        </section>
+    </main>
+    
+    <footer>
+        <h3>Desafio GECEM - &copy; 2026</h3>
+    </footer>
+
+    <script src="Script/script.js"></script>
+</body>
+</html>
