@@ -1,4 +1,6 @@
 const btnAdd = document.getElementById('btn-add');
+const btnImport = document.getElementById('btn-import');
+const fileInput = document.getElementById('file-input');
 const btnSpin = document.getElementById('btn-spin');
 const inputName = document.getElementById('input-name');
 const inputWrapper = document.querySelector('.input-wrapper');
@@ -8,7 +10,7 @@ const canvas = document.getElementById('wheel');
 const ctx = canvas.getContext('2d');
 
 let names = [];
-const MAX_NAMES = 8;
+const MAX_NAMES = 50;
 let spinning = false;
 let currentAngle = 0;
 let resultCount = 0;
@@ -21,15 +23,32 @@ inputName.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') addName();
 });
 
-function addName() {
-  const name = inputName.value.trim();
+function normalize(str) {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
 
-  if (!name) return;
-  if (names.length >= MAX_NAMES) {
-    alert('Limite de 8 nomes atingido!');
+function addName() {
+  const raw = inputName.value;
+  const name = raw.trim();
+
+  if (raw.length > 0 && name === '') {
+    alert('Adicione um nome válido!');
+    inputName.value = '';
     return;
   }
-  if (names.includes(name)) {
+
+  if (!name) return;
+
+  if (names.length >= MAX_NAMES) {
+    alert('Limite de 50 nomes atingido!');
+    return;
+  }
+
+  const nameNorm = normalize(name);
+  if (names.some(n => normalize(n) === nameNorm)) {
     alert('Esse nome já foi adicionado!');
     return;
   }
@@ -41,6 +60,75 @@ function addName() {
   renderList();
   drawWheel();
 }
+
+  btnImport.addEventListener('click', () => {
+  document.getElementById('file-input').click();
+});
+
+fileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  let importedNames = [];
+
+  try {
+    if (ext === 'csv') {
+      const text = await file.text();
+      importedNames = text
+        .split(/[\n\r,;]+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+    } else {
+      const buffer = await file.arrayBuffer();
+      const XLSX = window.XLSX;
+      if (!XLSX) {
+        alert('Biblioteca Excel ainda carregando. Tente novamente em instantes.');
+        return;
+      }
+      const wb = XLSX.read(buffer, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      rows.forEach(row => {
+        if (row[0] !== undefined && row[0] !== null && String(row[0]).trim() !== '') {
+          importedNames.push(String(row[0]).trim());
+        }
+      });
+    }
+  } catch (err) {
+    alert('Erro ao ler o arquivo. Certifique-se de que é um Excel (.xlsx) ou CSV válido.');
+    console.error(err);
+    e.target.value = '';
+    return;
+  }
+
+  if (importedNames.length === 0) {
+    alert('Nenhum nome encontrado na planilha.');
+    e.target.value = '';
+    return;
+  }
+
+  let added = 0;
+  let duplicates = 0;
+  let limitReached = false;
+
+  for (const name of importedNames) {
+    if (names.length >= MAX_NAMES) { limitReached = true; break; }
+    const nameNorm = normalize(name);
+    if (names.some(n => normalize(n) === nameNorm)) { duplicates++; continue; }
+    names.push(name);
+    added++;
+  }
+
+  let msg = `${added} nome(s) importado(s).`;
+  if (duplicates > 0) msg += ` ${duplicates} duplicado(s) ignorado(s).`;
+  if (limitReached) msg += ` Limite de ${MAX_NAMES} nomes atingido.`;
+  alert(msg);
+
+  e.target.value = '';
+  renderList();
+  drawWheel();
+});
 
 function removeName(index) {
   names.splice(index, 1);

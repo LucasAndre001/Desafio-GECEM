@@ -6,6 +6,7 @@
     <title>Sorteador de Nomes</title>
     <link rel="stylesheet" href="Style/style.css">
     <link rel="icon" href="Assets/favicon-16x16.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <header>
@@ -22,6 +23,13 @@
             <div class="input-wrapper">
                 <input type="text" id="input-name" placeholder="Digite um nome..." maxlength="20">
                 <button id="btn-add"><img src="Assets/adicionar.png" alt="botão de adicionar"></button>
+            </div>
+
+            <div class="import-wrapper">
+                <button id="btn-import" title="Importar nomes de planilha excel ou csv">
+                    <img src="./Assets/folder.png" id="import-icon" alt="Botão de importar"> Importar planilha
+                </button>
+                <input type="file" id="file-input" accept=".xlsx, .xls, .csv, .ods" style="display: none;">
             </div>
 
             <ul id="name-list">
